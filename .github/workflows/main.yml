@@ -1,0 +1,59 @@
+name: CI build
+
+on:
+  push:
+    branches: [ master ]
+    tags: v*
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout
+      with:
+        submodules: true
+        lfs: true
+    - name: Install Powershell
+      run: sudo apt-get install -y powershell
+    
+    - name: Setup NDK
+      id: setup-ndk
+      uses: nttld/setup-ndk@v1.0.6
+      with:
+        ndk-version: r23
+      
+    - name: Create ndkpath.txt
+      run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
+      
+    - name: Get QPM
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: cargo-build.yml
+        name: linux-qpm-rust
+        path: ./
+        repo: RedBrumbler/QuestPackageManager-Rust
+      
+    - name: QPM Restore
+      run: |
+        chmod +x ./qpm-rust
+        ./qpm-rust restore
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Build
+      run: pwsh -Command ./buildQMOD.ps1
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./SmallQubes.qmod
+        if-no-files-found: error
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: ./SmallQubes.qmod
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
