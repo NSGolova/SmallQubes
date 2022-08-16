@@ -15,6 +15,9 @@
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 #include "questui/shared/QuestUI.hpp"
 
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
+#include "beatsaber-hook/shared/rapidjson/include/rapidjson/filereadstream.h"
+
 #include "UnityEngine/GameObject.hpp"
 
 using namespace GlobalNamespace;
@@ -118,14 +121,40 @@ MAKE_HOOK_MATCH(NoteControllerInit, &NoteController::Init, void, NoteController*
 extern "C" void load() {
     il2cpp_functions::Init();
 
-    LoggerContextObject logger = getLogger().WithContext("load");
+    bool shouldStart = false;
+    FILE *fp = fopen("/sdcard/BMBFData/config.json", "r");
+    rapidjson::Document config;
+    if (fp != NULL) {
+        char buf[0XFFFF];
+        rapidjson::FileReadStream input(fp, buf, sizeof(buf));
+        config.ParseStream(input);
+        fclose(fp);
+    }
 
-    QuestUI::Init();
-    QuestUI::Register::RegisterGameplaySetupMenu(modInfo, "Small qubes", QuestUI::Register::MenuType::All, GameplaySettings);
+    if (!config.HasParseError() && config.IsObject()) {
+        auto mods = config["Mods"].GetArray();
+        shouldStart = true;
+        for (int index = 0; index < (int)mods.Size(); ++index)
+        {
+            auto const& mod = mods[index];
+            
+            if (strcmp(mod["Id"].GetString(), "qosmetics-notes") == 0 && mod["Installed"].GetBool()) {
+                shouldStart = false;
+                break;
+            }
+        }
+    }
 
-    getLogger().info("Installing main hooks...");
-    
-    INSTALL_HOOK(logger, NoteControllerInit);
+    if (shouldStart) {
+        LoggerContextObject logger = getLogger().WithContext("load");
 
-    getLogger().info("Installed main hooks!");
+        QuestUI::Init();
+        QuestUI::Register::RegisterGameplaySetupMenu(modInfo, "Small qubes", QuestUI::Register::MenuType::All, GameplaySettings);
+
+        getLogger().info("Installing main hooks...");
+        
+        INSTALL_HOOK(logger, NoteControllerInit);
+
+        getLogger().info("Installed main hooks!");
+    }
 }
