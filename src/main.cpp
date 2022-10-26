@@ -96,21 +96,6 @@ MAKE_HOOK_MATCH(NoteControllerInit, &NoteController::Init, void, NoteController*
         }
     }
 
-    auto sliderGameNote = il2cpp_utils::try_cast<BurstSliderGameNoteController>(self);
-    if (sliderGameNote != std::nullopt) {
-        auto bigCuttable = sliderGameNote.value()->bigCuttableBySaberList;
-        for (size_t i = 0; i < bigCuttable.Length(); i++)
-        {
-            scaleCollider(bigCuttable[i], colliderScaleBack);
-        }
-
-        auto smallCuttable = sliderGameNote.value()->smallCuttableBySaberList;
-        for (size_t i = 0; i < smallCuttable.Length(); i++)
-        {
-            scaleCollider(smallCuttable[i], colliderScaleBack);
-        }
-    }
-
     auto bombNote = il2cpp_utils::try_cast<BombNoteController>(self);
     if (bombNote != std::nullopt) {
         scaleCollider(bombNote.value()->cuttableBySaber, colliderScaleBack);
