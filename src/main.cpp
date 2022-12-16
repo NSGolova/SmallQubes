@@ -74,10 +74,8 @@ void scaleCollider(CuttableBySaber *cuttable, float value) {
 }
 
 MAKE_HOOK_MATCH(NoteControllerInit, &NoteController::Init, void, NoteController* self, NoteData* noteData, float worldRotation, Vector3 moveStartPos, Vector3 moveEndPos, Vector3 jumpEndPos, float moveDuration, float jumpDuration, float jumpGravity, float endRotation, float uniformScale, bool rotatesTowardsPlayer, bool useRandomRotation) {
-    NoteControllerInit(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity, endRotation, uniformScale, rotatesTowardsPlayer, useRandomRotation);
-
     float qubeSize = getModConfig().QubeSize.GetValue();
-    self->noteTransform->set_localScale(Vector3(uniformScale * qubeSize, uniformScale * qubeSize, uniformScale * qubeSize));
+    NoteControllerInit(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity, endRotation, uniformScale * qubeSize, rotatesTowardsPlayer, useRandomRotation);
 
     float colliderScaleBack = (1.0 / qubeSize);
 
