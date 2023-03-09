@@ -4,7 +4,7 @@
   "info": {
     "name": "SmallQubes",
     "id": "SmallQubes",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "url": null,
     "additionalData": {
       "overrideSoName": "libsq.so"
@@ -27,17 +27,17 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.32.0",
+      "versionRange": "^0.33.0",
       "additionalData": {}
     },
     {
       "id": "questui",
-      "versionRange": "^0.17.10",
+      "versionRange": "^0.17.11",
       "additionalData": {}
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.22",
+      "versionRange": "^0.15.23",
       "additionalData": {}
     },
     {
