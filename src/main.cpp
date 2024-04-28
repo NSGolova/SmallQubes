@@ -12,55 +12,52 @@
 
 #include "HMUI/Touchable.hpp"
 
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
-#include "questui/shared/QuestUI.hpp"
-
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 #include "beatsaber-hook/shared/rapidjson/include/rapidjson/filereadstream.h"
 
 #include "UnityEngine/GameObject.hpp"
 
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML-Lite.hpp"
+#include "bsml/shared/BSML.hpp"
+
 using namespace GlobalNamespace;
-using namespace QuestUI;
 using namespace UnityEngine;
 
-ModInfo modInfo; // Stores the ID and version of our mod, and is sent to the modloader upon startup
-
-// Returns a logger, useful for printing debug messages
-Logger& getLogger() {
-    static Logger* logger = new Logger(modInfo, LoggerOptions(false, true));
-    return *logger;
-}
-
 // Called at the early stages of game loading
-extern "C" void setup(ModInfo& info) {
-    info.id = ID;
-    info.version = VERSION;
-    modInfo = info;
-	
-    getModConfig().Init(modInfo); // Load the config file
-    getLogger().info("Completed setup!");
+MOD_EXPORT void setup(CModInfo *info) noexcept
+{
+    *info = modInfo.to_c();
+
+    getModConfig().Init(modInfo);
+
+    Paper::Logger::RegisterFileContextId(SQLogger.tag);
+
+    SQLogger.info("Completed setup!");
 }
 
-UnityEngine::Transform* GetSubcontainer(UnityEngine::UI::VerticalLayoutGroup* vertical) {
-    auto horizontal = BeatSaberUI::CreateHorizontalLayoutGroup(vertical);
-    horizontal->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minHeight(8);
+UnityEngine::Transform *GetSubcontainer(UnityEngine::UI::VerticalLayoutGroup *vertical)
+{
+    auto horizontal = BSML::Lite::CreateHorizontalLayoutGroup(vertical);
+    horizontal->GetComponent<UnityEngine::UI::LayoutElement *>()->set_minHeight(8);
     horizontal->set_childForceExpandHeight(true);
     horizontal->set_childAlignment(UnityEngine::TextAnchor::MiddleCenter);
     return horizontal->get_transform();
 }
 
-void GameplaySettings(GameObject* gameObject, bool firstActivation) {
-    if (firstActivation) {
-        auto vertical = BeatSaberUI::CreateVerticalLayoutGroup(gameObject->get_transform());
+void GameplaySettings(GameObject *gameObject, bool firstActivation)
+{
+    if (firstActivation)
+    {
+        auto vertical = BSML::Lite::CreateVerticalLayoutGroup(gameObject->get_transform());
 
-        BeatSaberUI::CreateSliderSetting(GetSubcontainer(vertical), "Qube size", 0.01, getModConfig().QubeSize.GetValue(), 0.01, 2, [](float newValue) {
-            getModConfig().QubeSize.SetValue(newValue);
-        });
+        BSML::Lite::CreateSliderSetting(GetSubcontainer(vertical), "Qube size", 0.01, getModConfig().QubeSize.GetValue(), 0.01, 2, [](float newValue)
+                                        { getModConfig().QubeSize.SetValue(newValue); });
     }
 }
 
-void scaleCollider(CuttableBySaber *cuttable, float value) {
+void scaleCollider(CuttableBySaber *cuttable, float value)
+{
     auto transform = cuttable->get_transform();
 
     auto localScale = transform->get_localScale();
@@ -71,71 +68,73 @@ void scaleCollider(CuttableBySaber *cuttable, float value) {
     transform->set_localScale(localScale);
 }
 
-MAKE_HOOK_MATCH(NoteControllerInit, &NoteController::Init, void, NoteController* self, NoteData* noteData, float worldRotation, Vector3 moveStartPos, Vector3 moveEndPos, Vector3 jumpEndPos, float moveDuration, float jumpDuration, float jumpGravity, float endRotation, float uniformScale, bool rotatesTowardsPlayer, bool useRandomRotation) {
+MAKE_HOOK_MATCH(NoteControllerInit, &NoteController::Init, void, NoteController *self, NoteData *noteData, float worldRotation, Vector3 moveStartPos, Vector3 moveEndPos, Vector3 jumpEndPos, float moveDuration, float jumpDuration, float jumpGravity, float endRotation, float uniformScale, bool rotatesTowardsPlayer, bool useRandomRotation)
+{
     float qubeSize = getModConfig().QubeSize.GetValue();
     NoteControllerInit(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity, endRotation, uniformScale * qubeSize, rotatesTowardsPlayer, useRandomRotation);
 
     float colliderScaleBack = (1.0 / qubeSize);
 
     auto gameNote = il2cpp_utils::try_cast<GameNoteController>(self);
-    if (gameNote != std::nullopt) {
-        auto bigCuttable = gameNote.value()->bigCuttableBySaberList;
-        for (size_t i = 0; i < bigCuttable.Length(); i++)
+    if (gameNote != std::nullopt)
+    {
+        auto bigCuttable = gameNote.value()->_bigCuttableBySaberList;
+        for (size_t i = 0; i < bigCuttable.size(); i++)
         {
             scaleCollider(bigCuttable[i], colliderScaleBack);
         }
 
-        auto smallCuttable = gameNote.value()->smallCuttableBySaberList;
-        for (size_t i = 0; i < smallCuttable.Length(); i++)
+        auto smallCuttable = gameNote.value()->_smallCuttableBySaberList;
+        for (size_t i = 0; i < smallCuttable.size(); i++)
         {
             scaleCollider(smallCuttable[i], colliderScaleBack);
         }
     }
 
     auto bombNote = il2cpp_utils::try_cast<BombNoteController>(self);
-    if (bombNote != std::nullopt) {
-        scaleCollider(bombNote.value()->cuttableBySaber, colliderScaleBack);
+    if (bombNote != std::nullopt)
+    {
+        scaleCollider(bombNote.value()->_cuttableBySaber, colliderScaleBack);
     }
 }
 
 // Called later on in the game loading - a good time to install function hooks
-extern "C" void load() {
+MOD_EXPORT "C" void late_load()
+{
     il2cpp_functions::Init();
 
     bool shouldStart = false;
     FILE *fp = fopen("/sdcard/BMBFData/config.json", "r");
     rapidjson::Document config;
-    if (fp != NULL) {
+    if (fp != NULL)
+    {
         char buf[0XFFFF];
         rapidjson::FileReadStream input(fp, buf, sizeof(buf));
         config.ParseStream(input);
         fclose(fp);
     }
 
-    if (!config.HasParseError() && config.IsObject()) {
+    if (!config.HasParseError() && config.IsObject())
+    {
         auto mods = config["Mods"].GetArray();
         shouldStart = true;
         for (int index = 0; index < (int)mods.Size(); ++index)
         {
-            auto const& mod = mods[index];
-            
-            if (strcmp(mod["Id"].GetString(), "qosmetics-notes") == 0 && mod["Installed"].GetBool()) {
+            auto const &mod = mods[index];
+
+            if (strcmp(mod["Id"].GetString(), "qosmetics-notes") == 0 && mod["Installed"].GetBool())
+            {
                 shouldStart = false;
                 break;
             }
         }
     }
 
-    if (shouldStart) {
-        LoggerContextObject logger = getLogger().WithContext("load");
+    if (shouldStart)
+    {
+        BSML::Init();
+        BSML::Register::RegisterGameplaySetupTab("Small qubes", GameplaySettings);
 
-        QuestUI::Init();
-        QuestUI::Register::RegisterGameplaySetupMenu(modInfo, "Small qubes", QuestUI::Register::MenuType::All, GameplaySettings);
-
-        getLogger().info("Installing main hooks...");
-        
-        INSTALL_HOOK(logger, NoteControllerInit);
-
-        getLogger().info("Installed main hooks!");
+        INSTALL_HOOK(SQLogger, NoteControllerInit);
     }
 }

@@ -1,10 +1,10 @@
 Param(
-    [String] $qmodname="SmallQubes",
+    [String] $qmodname = "SmallQubes",
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $clean,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $help
 )
 
@@ -20,8 +20,7 @@ if ($help -eq $true) {
     exit
 }
 
-if ($qmodName -eq "")
-{
+if ($qmodName -eq "") {
     echo "Give a proper qmod name and try again"
     exit
 }
@@ -41,26 +40,21 @@ $modJson = Get-Content $mod -Raw | ConvertFrom-Json
 $filelist = @($mod)
 
 $cover = "./" + $modJson.coverImage
-if ((-not ($cover -eq "./")) -and (Test-Path $cover))
-{ 
-    $filelist += ,$cover
+if ((-not ($cover -eq "./")) -and (Test-Path $cover)) { 
+    $filelist += , $cover
 }
 
-foreach ($mod in $modJson.modFiles)
-{
+foreach ($mod in $modJson.lateModFiles) {
     $path = "./build/" + $mod
-    if (-not (Test-Path $path))
-    {
+    if (-not (Test-Path $path)) {
         $path = "./extern/libs/" + $mod
     }
     $filelist += $path
 }
 
-foreach ($lib in $modJson.libraryFiles)
-{
+foreach ($lib in $modJson.libraryFiles) {
     $path = "./build/" + $lib
-    if (-not (Test-Path $path))
-    {
+    if (-not (Test-Path $path)) {
         $path = "./extern/libs/" + $lib
     }
     $filelist += $path
@@ -69,8 +63,7 @@ foreach ($lib in $modJson.libraryFiles)
 $zip = $qmodName + ".zip"
 $qmod = $qmodName + ".qmod"
 
-if ((-not ($clean.IsPresent)) -and (Test-Path $qmod))
-{
+if ((-not ($clean.IsPresent)) -and (Test-Path $qmod)) {
     echo "Making Clean Qmod"
     Move-Item $qmod $zip -Force
 }
