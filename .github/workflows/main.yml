@@ -30,18 +30,44 @@ jobs:
       run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
       
     - name: Get QPM
+      if: steps.cache-qpm.outputs.cache-hit != 'true'
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: cargo-build.yml
-        name: linux-qpm-rust
-        path: ./
-        repo: RedBrumbler/QuestPackageManager-Rust
+        name: linux-qpm
+        path: QPM
+        repo: QuestPackageManager/QPM.CLI
       
+    - name: QPM Collapse
+      run: |
+        chmod +x ./QPM/qpm
+        ./QPM/qpm collapse
+    
+    - name: QPM Dependencies Cache
+      id: cache-qpm-deps
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-qpm-deps
+      with:
+        path: /home/runner/.local/share/QPM-RS/cache
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('qpm.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
     - name: QPM Restore
       run: |
-        chmod +x ./qpm-rust
-        ./qpm-rust restore
+        ./QPM/qpm restore
+    - name: List Post Restore
+      run: |
+        echo includes:
+        ls -la ${GITHUB_WORKSPACE}/extern/includes
+        echo libs:
+        ls -la ${GITHUB_WORKSPACE}/extern/libs
+        echo cache:
+        ls -la $HOME/.local/share/QPM-RS/cache
+       
     - uses: seanmiddleditch/gha-setup-ninja@master
     - name: Build
       run: pwsh -Command ./buildQMOD.ps1
