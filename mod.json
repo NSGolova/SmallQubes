@@ -5,6 +5,7 @@
   "modloader": "Scotland2",
   "author": "NSGolova",
   "version": "0.3.0",
+  "description": "Adds a slider to change default cubes size",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.35.0_8016709773",
   "coverImage": "cover.png",
