@@ -31,8 +31,7 @@
     "libsq.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_5_1_9.so",
-    "libsl2.so"
+    "libbeatsaber-hook_5_1_9.so"
   ],
   "fileCopies": [],
   "copyExtensions": []

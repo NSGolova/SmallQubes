@@ -104,25 +104,11 @@ MOD_EXPORT "C" void late_load()
     il2cpp_functions::Init();
 
     bool shouldStart = false;
-    FILE *fp = fopen("/sdcard/BMBFData/config.json", "r");
-    rapidjson::Document config;
-    if (fp != NULL)
+    for (auto &modInfo : modloader::get_all())
     {
-        char buf[0XFFFF];
-        rapidjson::FileReadStream input(fp, buf, sizeof(buf));
-        config.ParseStream(input);
-        fclose(fp);
-    }
-
-    if (!config.HasParseError() && config.IsObject())
-    {
-        auto mods = config["Mods"].GetArray();
-        shouldStart = true;
-        for (int index = 0; index < (int)mods.Size(); ++index)
+        if (auto loadedMod = std::get_if<modloader::ModData>(&modInfo))
         {
-            auto const &mod = mods[index];
-
-            if (strcmp(mod["Id"].GetString(), "qosmetics-notes") == 0 && mod["Installed"].GetBool())
+            if (loadedMod->info.id == "qosmetics-notes")
             {
                 shouldStart = false;
                 break;

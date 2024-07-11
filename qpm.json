@@ -4,7 +4,7 @@
   "info": {
     "name": "SmallQubes",
     "id": "SmallQubes",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "url": null,
     "additionalData": {
       "overrideSoName": "libsq.so"
@@ -23,7 +23,10 @@
     {
       "id": "scotland2",
       "versionRange": "^0.1.4",
-      "additionalData": {}
+      "additionalData": {
+        "includeQmod": false,
+        "private": true
+      }
     },
     {
       "id": "bs-cordl",
