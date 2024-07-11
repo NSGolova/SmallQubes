@@ -4,10 +4,10 @@
   "id": "SmallQubes",
   "modloader": "Scotland2",
   "author": "NSGolova",
-  "version": "0.3.0",
-  "description": "Adds a slider to change default cubes size",
+  "version": "0.3.2",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.35.0_8016709773",
+  "description": "Adds a slider to change default cubes size",
   "coverImage": "cover.png",
   "dependencies": [
     {
@@ -18,12 +18,12 @@
     {
       "version": "^3.6.3",
       "id": "paper",
-      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.3/paperlog.qmod"
+      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.4/paperlog.qmod"
     },
     {
       "version": "^0.4.24",
       "id": "bsml",
-      "downloadIfMissing": "https://github.com/RedBrumbler/Quest-BSML/releases/download/v0.4.24/BSML.qmod"
+      "downloadIfMissing": "https://github.com/RedBrumbler/Quest-BSML/releases/download/v0.4.41/BSML.qmod"
     }
   ],
   "modFiles": [],
@@ -31,8 +31,7 @@
     "libsq.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_5_1_6.so",
-    "libsl2.so"
+    "libbeatsaber-hook_5_1_6.so"
   ],
   "fileCopies": [],
   "copyExtensions": []
