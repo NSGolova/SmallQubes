@@ -103,7 +103,7 @@ MOD_EXPORT "C" void late_load()
 {
     il2cpp_functions::Init();
 
-    bool shouldStart = false;
+    bool shouldStart = true;
     for (auto &modInfo : modloader::get_all())
     {
         if (auto loadedMod = std::get_if<modloader::ModData>(&modInfo))
