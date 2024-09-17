@@ -1,26 +1,26 @@
 Param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $clean,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $log,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $useDebug,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $self,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $all,
 
-    [Parameter(Mandatory=$false)]
-    [String] $custom="",
+    [Parameter(Mandatory = $false)]
+    [String] $custom = "",
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $file,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [Switch] $help
 )
 
@@ -48,11 +48,29 @@ if ($LASTEXITCODE -ne 0) {
 
 if ($useDebug -eq $true) {
     $fileName = Get-ChildItem lib*.so -Path "build/debug" -Name
-} else {
+}
+else {
     $fileName = Get-ChildItem lib*.so -Path "build/" -Name
 }
+$modJson = Get-Content "./mod.json" -Raw | ConvertFrom-Json
 
-& adb push build/$fileName /sdcard/Android/data/com.beatgames.beatsaber/files/mods/$fileName
+foreach ($fileName in $modJson.modFiles) {
+    if ($useDebug -eq $true) {
+        & adb push build/debug/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/early_mods/$fileName
+    }
+    else {
+        & adb push build/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/early_mods/$fileName
+    }
+}
+
+foreach ($fileName in $modJson.lateModFiles) {
+    if ($useDebug -eq $true) {
+        & adb push build/debug/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/mods/$fileName
+    }
+    else {
+        & adb push build/$fileName /sdcard/ModData/com.beatgames.beatsaber/Modloader/mods/$fileName
+    }
+}
 
 & $PSScriptRoot/restart-game.ps1
 

@@ -21,6 +21,9 @@
 #include "bsml/shared/BSML-Lite.hpp"
 #include "bsml/shared/BSML.hpp"
 
+#include "conditional-dependencies/shared/main.hpp"
+#include "include/Player.hpp"
+
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 
@@ -36,6 +39,29 @@ MOD_EXPORT void setup(CModInfo *info) noexcept
     SQLogger.info("Completed setup!");
 }
 
+string TextForPlayer(std::optional<Player> player)
+{
+    if (!player || player->rank == 0 || player->rank > 10000)
+    {
+        return "Any cube size will fit for a casual player";
+    }
+    else
+    {
+        if (player->rank > 5000)
+        {
+            return player->name + ", smaller cubes lead to bigger pp!";
+        }
+        else if (player->rank > 1000)
+        {
+            return player->name + ", lock in, you are close!";
+        }
+        else
+        {
+            return player->name + ", what are we playing today, my champion?";
+        }
+    }
+}
+
 UnityEngine::Transform *GetSubcontainer(UnityEngine::UI::VerticalLayoutGroup *vertical)
 {
     auto horizontal = BSML::Lite::CreateHorizontalLayoutGroup(vertical);
@@ -45,13 +71,26 @@ UnityEngine::Transform *GetSubcontainer(UnityEngine::UI::VerticalLayoutGroup *ve
     return horizontal->get_transform();
 }
 
+TMPro::TextMeshProUGUI *playerName = NULL;
+
 void GameplaySettings(GameObject *gameObject, bool firstActivation)
 {
     if (firstActivation)
     {
         auto vertical = BSML::Lite::CreateVerticalLayoutGroup(gameObject->get_transform());
+        auto container = GetSubcontainer(vertical);
 
-        BSML::Lite::CreateSliderSetting(GetSubcontainer(vertical), "Qube size", 0.01, getModConfig().QubeSize.GetValue(), 0.01, 2, [](float newValue)
+        if (CondDeps::FindUnsafe<std::optional<std::string>>("bl", "LoggedInPlayerId"))
+        {
+            std::optional<Player> player = CondDeps::FindUnsafe<std::optional<Player>>("bl", "LoggedInPlayer").value()();
+
+            playerName = BSML::Lite::CreateText(vertical->get_transform(), TextForPlayer(player));
+
+            auto playerCallback = CondDeps::Find<void, function<void(std::optional<Player>)>>("bl", "AddPlayerCallback");
+            playerCallback.value()([](std::optional<Player> updated)
+                                   { playerName->SetText(TextForPlayer(updated), true); });
+        }
+        BSML::Lite::CreateSliderSetting(container, "Qube size", 0.01, getModConfig().QubeSize.GetValue(), 0.01, 2, [](float newValue)
                                         { getModConfig().QubeSize.SetValue(newValue); });
     }
 }
