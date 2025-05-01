@@ -18,7 +18,7 @@
     {
       "version": "^3.6.3",
       "id": "paper",
-      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.6.3/paperlog.qmod"
+      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v3.7.0/paperlog.qmod"
     },
     {
       "version": "^0.4.34",

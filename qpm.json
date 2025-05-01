@@ -4,11 +4,43 @@
   "info": {
     "name": "SmallQubes",
     "id": "SmallQubes",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "url": null,
     "additionalData": {
       "overrideSoName": "libsq.so"
     }
+  },
+  "workspace": {
+    "scripts": {
+      "build": [
+        "pwsh ./build.ps1"
+      ],
+      "clean": [
+        "pwsh ./build.ps1 -clean"
+      ],
+      "copy": [
+        "pwsh ./copy.ps1"
+      ],
+      "log": [
+        "pwsh ./start-logging.ps1"
+      ],
+      "qmod": [
+        "pwsh ./buildQMOD.ps1"
+      ],
+      "restart": [
+        "pwsh ./restart-game.ps1"
+      ],
+      "stack": [
+        "pwsh ./ndk-stack.ps1"
+      ],
+      "tomb": [
+        "pwsh ./pull-tombstone.ps1"
+      ]
+    },
+    "ndk": "^27.2.12479018",
+    "qmodIncludeDirs": [],
+    "qmodIncludeFiles": [],
+    "qmodOutput": "./SmallQubes.qmod"
   },
   "dependencies": [
     {
