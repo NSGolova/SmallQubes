@@ -108,7 +108,7 @@ MOD_EXPORT "C" void late_load()
     {
         if (auto loadedMod = std::get_if<modloader::ModData>(&modInfo))
         {
-            if (loadedMod->info.id == "qosmetics-notes")
+            if (loadedMod->info.id == "qosmetics-notes" || loadedMod->info.id == "QosmeticsCyoobs" || loadedMod->info.id == "Qosmetics-Notes")
             {
                 shouldStart = false;
                 break;
