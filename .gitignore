@@ -4,12 +4,11 @@
 bin
 obj
 build
-BeatLeader.qmod
+*.qmod
 logcat.log
 tombstone*
 extern/
 qpm-rust
-qpm.shared.json
 ndkpath.txt
 extern.cmake
 qpm_defines.cmake
@@ -17,3 +16,4 @@ ndkpath.txt
 *.log
 log.txt
 cmake-build-debug/
+mod.json

@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/QuestPackageManager/QPM.Package/refs/heads/main/qpm.schema.json",
+  "version": "0.4.0",
   "sharedDir": "shared",
   "dependenciesDir": "extern",
   "info": {
@@ -39,7 +40,10 @@
       ]
     },
     "ndk": "^27.2.12479018",
-    "qmodIncludeDirs": [],
+    "qmodIncludeDirs": [
+      "build",
+      "extern/libs"
+    ],
     "qmodIncludeFiles": [],
     "qmodOutput": "./SmallQubes.qmod"
   },
@@ -50,16 +54,18 @@
       "additionalData": {}
     },
     {
-      "id": "scotland2",
-      "versionRange": "^0.1.6",
-      "additionalData": {
-        "includeQmod": false,
-        "private": true
-      }
+      "id": "bs-cordl",
+      "versionRange": "4005.*",
+      "additionalData": {}
     },
     {
-      "id": "bs-cordl",
-      "versionRange": "4004.*",
+      "id": "bsml",
+      "versionRange": "^0.4.52",
+      "additionalData": {}
+    },
+    {
+      "id": "config-utils",
+      "versionRange": "^2.0.3",
       "additionalData": {}
     },
     {
@@ -68,20 +74,17 @@
       "additionalData": {}
     },
     {
-      "id": "config-utils",
-      "versionRange": "^2.0.2",
-      "additionalData": {}
-    },
-    {
       "id": "paper2_scotland2",
-      "versionRange": "^4.6.1",
+      "versionRange": "^4.6.4",
       "additionalData": {}
     },
     {
-      "id": "bsml",
-      "versionRange": "^0.4.51",
-      "additionalData": {}
+      "id": "scotland2",
+      "versionRange": "^0.1.6",
+      "additionalData": {
+        "includeQmod": false,
+        "private": true
+      }
     }
-  ],
-  "additionalData": {}
+  ]
 }
