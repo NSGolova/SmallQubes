@@ -9,5 +9,6 @@
   "packageVersion": "1.40.4_5283",
   "coverImage": "cover.png",
   "modFiles": [],
+  "lateModFiles": ["${binary}"],
   "libraryFiles": []
 }
