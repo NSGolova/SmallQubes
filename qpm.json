@@ -5,7 +5,7 @@
   "info": {
     "name": "SmallQubes",
     "id": "SmallQubes",
-    "version": "0.3.4",
+    "version": "0.3.5",
     "url": null,
     "additionalData": {
       "overrideSoName": "libsq.so"
