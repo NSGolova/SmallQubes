@@ -5,7 +5,7 @@
   "info": {
     "name": "SmallQubes",
     "id": "SmallQubes",
-    "version": "0.3.5",
+    "version": "0.3.6",
     "url": null,
     "additionalData": {
       "overrideSoName": "libsq.so"
@@ -62,7 +62,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "4006.*",
+      "versionRange": "4007.*",
       "additionalData": {}
     },
     {
@@ -82,7 +82,7 @@
     },
     {
       "id": "bsml",
-      "versionRange": "^0.4.53",
+      "versionRange": "^0.4.54",
       "additionalData": {}
     }
   ],
